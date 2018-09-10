@@ -3,7 +3,7 @@
 import sys
 import os
 import xlrd
-from PyQt5.QtWidgets import (QWidget, QLabel, QLineEdit, QListWidget, QGridLayout, QPushButton, QApplication, QFileDialog)
+from PyQt5.QtWidgets import (QWidget, QLabel, QLineEdit, QTextEdit, QGridLayout, QPushButton, QApplication, QFileDialog)
 from PyQt5.QtGui import QFont
 
 class Example(QWidget):
@@ -28,7 +28,7 @@ class Example(QWidget):
         self.start_Btn.setAutoDefault(True)
         self.srch_wrd_Edit.returnPressed.connect(self.start_Btn.click)
 
-        self.srch_List = QListWidget()
+        self.srch_List = QTextEdit()
 
         grid = QGridLayout()
         grid.setSpacing(10)
@@ -64,6 +64,9 @@ class Example(QWidget):
     def srch_txt_in_xlsfile(self, xlsfile, search_text):
         wrkbook = xlrd.open_workbook(xlsfile)
         # watching sheets in file
+        self.srch_List.setFontPointSize(11)
+        self.srch_List.append(xlsfile)
+        self.srch_List.setFontPointSize(9)
         for sheet_nmb in range(wrkbook.nsheets):
             sheet = wrkbook.sheet_by_index(sheet_nmb)
             for rownum in range(sheet.nrows):   # going to rows
@@ -73,11 +76,12 @@ class Example(QWidget):
                         row_val = ""
                         for cols in range(sheet.ncols):
                             row_val += str(sheet.cell(rownum,cols).value) + " "
-                        self.srch_List.addItem(row_val)
-                        self.srch_List.addItem("[Column:" +
-                            str(colnum+1) + " Row:" + str(rownum+1) +
-                            " Sheet:" + str(sheet_nmb) + " Path:" +
-                            str(xlsfile) + "]")
+                        self.srch_List.append(row_val)
+                        # ~ self.srch_List.append("[Column:" +
+                            # ~ str(colnum+1) + " Row:" + str(rownum+1) +
+                            # ~ " Sheet:" + str(sheet_nmb) + " Path:" +
+                            # ~ str(xlsfile) + "]")
+        self.srch_List.append("-" * 150)
 
     def start_search(self):
         self.start_Btn.setEnabled(0)
@@ -92,10 +96,10 @@ class Example(QWidget):
             search_text = "кардан"
             self.srch_wrd_Edit.insert(search_text)
         self.srch_List.clear()
-        self.srch_List.addItem("Starting search...")
+        self.srch_List.append("Starting search...")
         for wrk_file in self.search_in_path(s_path):
             self.srch_txt_in_xlsfile(wrk_file, search_text)
-        self.srch_List.addItem("Search finished.")
+        self.srch_List.append("Search finished...")
         self.start_Btn.setEnabled(1)
 
 if __name__ == '__main__':
